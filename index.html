@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="robots" content="noindex, nofollow, noarchive, noimageindex">
-<title>Les Délices de Pavlo · L'expérience que vous n'avez pas demandée</title>
-<meta name="description" content="Site parodique. Le foie gras de Pavlo, en 3D, parce qu'un message vocal ne suffisait plus.">
+<title>Les Délices de Paulo · L'expérience que vous n'avez pas demandée</title>
+<meta name="description" content="Site parodique. Le foie gras de Paulo, en 3D, parce qu'un message vocal ne suffisait plus.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Allura&family=Montserrat:ital,wght@0,200;0,300;0,500;0,700;1,500;1,600&family=Playfair+Display:ital,wght@0,700;0,800;1,700&display=swap" rel="stylesheet">
@@ -33,7 +33,7 @@ section{min-height:100vh;display:flex;align-items:center;padding:10vh 6vw;positi
 .title .les{font-size:clamp(2rem,4.5vw,3.6rem);vertical-align:.55em;margin-right:.15em}
 .title .delices{font-size:clamp(3.6rem,9vw,7.5rem);letter-spacing:-.01em}
 .title .de{display:block;font-size:clamp(1.4rem,2.6vw,2.2rem);margin:.15em 0 0 -3.6em}
-.title .pavlo{display:block;font-family:Allura,cursive;font-weight:400;font-size:clamp(6rem,17vw,13rem);line-height:.6;margin-top:-.08em;color:#fff;transform:rotate(-4deg);opacity:.95}
+.title .paulo{display:block;font-family:Allura,cursive;font-weight:400;font-size:clamp(6rem,17vw,13rem);line-height:.6;margin-top:-.08em;color:#fff;transform:rotate(-4deg);opacity:.95}
 .sub{margin-top:5vh;font-size:.85rem;letter-spacing:.3em;text-transform:uppercase;color:var(--muted)}
 .scroll-hint{position:absolute;left:50%;bottom:5vh;transform:translateX(-50%);color:var(--gold);font-size:.75rem;letter-spacing:.24em;text-transform:uppercase;text-decoration:none;padding:.8em 1em;white-space:nowrap}
 .scroll-hint::after{content:"";display:block;width:1px;height:42px;margin:12px auto 0;background:linear-gradient(var(--gold),transparent);animation:drip 2.2s var(--ease) infinite}
@@ -116,14 +116,14 @@ footer{position:relative;z-index:2;text-align:center;padding:4vh 6vw 6vh;color:#
 </script>
 </head>
 <body>
-<div class="loader" id="loader" role="status" aria-live="polite"><div><p>Le foie gras arrive…</p><small>Pavlo prépare son argumentaire</small></div></div>
+<div class="loader" id="loader" role="status" aria-live="polite"><div><p>Le foie gras arrive…</p><small>Paulo prépare son argumentaire</small></div></div>
 <canvas id="scene" aria-hidden="true"></canvas>
 <div class="vignette"></div>
 
 <main>
   <section class="hero" id="s1">
     <div>
-      <h1 class="title" aria-label="Les Délices de Pavlo"><span class="les">Les</span><span class="delices">Délices</span><span class="de">de</span><span class="pavlo">Pavlo</span></h1>
+      <h1 class="title" aria-label="Les Délices de Paulo"><span class="les">Les</span><span class="delices">Délices</span><span class="de">de</span><span class="paulo">Paulo</span></h1>
       <p class="kicker" style="margin-top:3vh">Accompagnez vos fêtes<br>de nos délices gourmands</p>
       <p class="sub">que vous le vouliez ou non</p>
     </div>
@@ -190,7 +190,7 @@ footer{position:relative;z-index:2;text-align:center;padding:4vh 6vw 6vh;color:#
         <p>Scannez le QR code<span>pour recevoir un vocal de 6 minutes</span></p>
         <canvas id="qr" width="29" height="29" role="img" aria-label="Faux QR code, décoratif"></canvas>
       </div>
-      <p class="counter" aria-live="off">Relances de Pavlo aujourd'hui : <b id="count">37</b></p>
+      <p class="counter" aria-live="off">Relances de Paulo aujourd'hui : <b id="count">37</b></p>
     </div>
   </section>
 </main>
@@ -216,7 +216,7 @@ let renderer;
 try {
   renderer = new THREE.WebGLRenderer({ canvas: document.getElementById('scene'), antialias: true });
 } catch (e) {
-  loader.innerHTML = '<div><p>Votre navigateur refuse le foie gras.</p><small>Pavlo vous appellera pour en parler</small></div>';
+  loader.innerHTML = '<div><p>Votre navigateur refuse le foie gras.</p><small>Paulo vous appellera pour en parler</small></div>';
   throw e;
 }
 renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
@@ -489,7 +489,7 @@ no.addEventListener('pointerenter', e => {
   no.textContent = noLines[dodges % noLines.length];
 });
 function order() {
-  toast("Précommande enregistrée. Pavlo vous rappelle pour confirmer. Puis demain, pour reconfirmer.");
+  toast("Précommande enregistrée. Paulo vous rappelle pour confirmer. Puis demain, pour reconfirmer.");
 }
 no.addEventListener('click', () => {
   no.textContent = 'Oui, finalement'; no.classList.add('converted'); no.style.transform = ''; order();
