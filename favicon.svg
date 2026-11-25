@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <defs>
+    <radialGradient id="f" cx="45%" cy="40%" r="60%">
+      <stop offset="0" stop-color="#f1c99b"/>
+      <stop offset=".7" stop-color="#dca06c"/>
+      <stop offset="1" stop-color="#c4844f"/>
+    </radialGradient>
+  </defs>
+  <rect width="64" height="64" rx="12" fill="#0b0908"/>
+  <rect x="4.5" y="4.5" width="55" height="55" rx="8" fill="none" stroke="#a9854c" stroke-width="1.5"/>
+  <!-- tranche de foie gras -->
+  <ellipse cx="28" cy="34" rx="19" ry="15" fill="#e8c372"/>
+  <ellipse cx="28" cy="34" rx="16.5" ry="12.8" fill="url(#f)"/>
+  <path d="M19 30c4 2 6-1 10 1s5 4 9 2" fill="none" stroke="#b5624a" stroke-opacity=".45" stroke-width="1.2" stroke-linecap="round"/>
+  <!-- grains de caviar -->
+  <circle cx="47" cy="44" r="4" fill="#16180f" stroke="#d8b87e" stroke-width=".8"/>
+  <circle cx="52.5" cy="39" r="3.2" fill="#16180f" stroke="#d8b87e" stroke-width=".8"/>
+  <circle cx="50" cy="49.5" r="2.8" fill="#16180f" stroke="#d8b87e" stroke-width=".8"/>
+</svg>
