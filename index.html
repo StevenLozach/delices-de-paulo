@@ -80,6 +80,23 @@ p strong{color:var(--cream);font-weight:500}
 .quotes blockquote{font-family:"Playfair Display",serif;font-style:italic;font-size:clamp(1.05rem,1.7vw,1.3rem);color:var(--cream);line-height:1.4}
 .quotes cite{display:block;margin-top:.35rem;font-style:normal;font-size:.8rem;letter-spacing:.2em;text-transform:uppercase;color:var(--gold)}
 
+.evidence{margin:1rem 0 1.4rem;padding:6px;border:1px solid rgba(216,184,126,.35);background:#000}
+.evidence img{display:block;width:100%;height:auto;aspect-ratio:800/451;object-fit:cover}
+.evidence figcaption{padding:.6rem .2rem .2rem;font-size:.8rem;letter-spacing:.06em;color:var(--gold)}
+
+/* Bouton musique */
+.music{position:fixed;top:16px;right:16px;z-index:15;display:flex;align-items:center;gap:.55rem;padding:.65rem 1rem;background:rgba(11,9,8,.82);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);border:1px solid var(--gold-2);color:var(--gold);font-size:.72rem;font-weight:500;letter-spacing:.18em;text-transform:uppercase;transition:transform .18s var(--ease),color .2s,border-color .2s}
+.music:hover{color:var(--gold-hi);border-color:var(--gold)}
+.music:active{transform:scale(.96)}
+.music svg{width:18px;height:18px;flex:none}
+.music .bars{display:flex;gap:2px;align-items:flex-end;height:12px}
+.music .bars span{width:2px;height:100%;background:currentColor;transform-origin:bottom;transform:scaleY(.25)}
+.music[aria-pressed="true"] .bars span{animation:eq 1s var(--ease) infinite alternate}
+.music[aria-pressed="true"] .bars span:nth-child(2){animation-delay:-.4s}
+.music[aria-pressed="true"] .bars span:nth-child(3){animation-delay:-.7s}
+@keyframes eq{to{transform:scaleY(1)}}
+.og .music{display:none}
+
 /* Final */
 .final .panel{max-width:min(640px,92vw)}
 .final .big{font-family:"Playfair Display",serif;font-size:clamp(2rem,4.5vw,3.4rem);color:#fff;line-height:1.05}
@@ -122,7 +139,9 @@ footer{position:relative;z-index:2;text-align:center;padding:4vh 6vw 6vh;color:#
 @media (prefers-reduced-motion:reduce){
   .scroll-hint::after{animation:none}
   .prices li{transition:none}
+  .music[aria-pressed="true"] .bars span{animation:none;transform:scaleY(.7)}
 }
+@media (max-width:760px){.music .label{display:none}.music{padding:.7rem}}
 </style>
 <script type="importmap">
 {"imports":{
@@ -186,6 +205,10 @@ footer{position:relative;z-index:2;text-align:center;padding:4vh 6vw 6vh;color:#
   <section class="left" id="s5">
     <div class="panel frame"><i></i><i></i><i></i><i></i>
       <p class="kicker">Chapitre 4 · Ils ont cédé</p>
+      <figure class="evidence">
+        <img src="stand-paulo.webp" width="800" height="451" loading="lazy" decoding="async" alt="Le stand des Délices de Paulo au marché de Noël : trois vendeurs en tablier tendent une boîte de foie gras à un seul client.">
+        <figcaption>Pièce à conviction n° 1 · Trois vendeurs, un client, aucune issue.</figcaption>
+      </figure>
       <ul class="quotes">
         <li><blockquote>« J'ai dit non trois fois. J'ai reçu 500 grammes. »</blockquote><cite>Un ami, ex-végétarien</cite></li>
         <li><blockquote>« Il m'a envoyé un vocal de 6 minutes sur le torchon. »</blockquote><cite>Son colocataire</cite></li>
@@ -212,6 +235,92 @@ footer{position:relative;z-index:2;text-align:center;padding:4vh 6vw 6vh;color:#
 </main>
 <footer>Site parodique, fait avec amour et sous pression commerciale. Aucun canard n'a été relancé autant que nous.</footer>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
+<button class="music" id="music" type="button" aria-pressed="false" aria-label="Musique d'ambiance">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M9 18V5l11-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="17" cy="16" r="3"/></svg>
+  <span class="label">Ambiance</span>
+  <span class="bars" aria-hidden="true"><span></span><span></span><span></span></span>
+</button>
+
+<script>
+// Boîte à musique de Noël générée en Web Audio : aucun fichier, aucun droit.
+// Mélodie : « Douce nuit » (Gruber, 1818, domaine public), en boucle.
+(() => {
+  const btn = document.getElementById('music');
+  let ctx, master, wet, timer, step = 0, next = 0, on = false;
+  // [note MIDI, durée en croches] ; 6 croches par mesure
+  const MEL = [[67,3],[69,1],[67,2],[64,6],[67,3],[69,1],[67,2],[64,6],[74,4],[74,2],[71,6],[72,4],[72,2],[67,6],
+    [69,4],[69,2],[72,3],[71,1],[69,2],[67,3],[69,1],[67,2],[64,6],[69,4],[69,2],[72,3],[71,1],[69,2],[67,3],[69,1],[67,2],[64,6],
+    [74,4],[74,2],[77,3],[74,1],[71,2],[72,6],[76,6],[72,3],[67,1],[64,2],[67,3],[65,1],[62,2],[60,12]];
+  const C = [48,55,64], G7 = [43,53,59], F = [41,57,60];
+  // un accord par mesure (24 mesures)
+  const CHORDS = [C,C,C,C,G7,G7,C,C,F,F,C,C,F,F,C,C,G7,G7,C,C,C,G7,C,C];
+  const E = .3; // durée d'une croche, en secondes
+  const hz = m => 440 * 2 ** ((m - 69) / 12);
+
+  function init() {
+    ctx = new (window.AudioContext || window.webkitAudioContext)();
+    master = ctx.createGain(); master.gain.value = 0; master.connect(ctx.destination);
+    // Réverbération : bruit qui décroît, assez pour un marché sous chapiteau
+    const len = ctx.sampleRate * 2.6, ir = ctx.createBuffer(2, len, ctx.sampleRate);
+    for (let c = 0; c < 2; c++) { const d = ir.getChannelData(c); for (let i = 0; i < len; i++) d[i] = (Math.random() * 2 - 1) * (1 - i / len) ** 3; }
+    const rev = ctx.createConvolver(); rev.buffer = ir;
+    wet = ctx.createGain(); wet.gain.value = .45; wet.connect(rev); rev.connect(master);
+  }
+  function out(node, dry) { const g = ctx.createGain(); g.gain.value = dry; node.connect(g); g.connect(master); node.connect(wet); }
+
+  function bell(m, t) { // boîte à musique : fondamentale + partiels aigus, attaque sèche
+    [[1, .22, 1.8], [2, .07, .9], [3.01, .05, .5], [5.4, .02, .25]].forEach(([k, a, d]) => {
+      const o = ctx.createOscillator(), g = ctx.createGain();
+      o.frequency.value = hz(m) * k; g.gain.setValueAtTime(0, t);
+      g.gain.linearRampToValueAtTime(a, t + .004); g.gain.exponentialRampToValueAtTime(.0001, t + d);
+      o.connect(g); out(g, .8); o.start(t); o.stop(t + d + .05);
+    });
+  }
+  function pad(notes, t, dur) { // nappe chaude et discrète
+    notes.forEach(m => [-4, 4].forEach(cents => {
+      const o = ctx.createOscillator(), f = ctx.createBiquadFilter(), g = ctx.createGain();
+      o.type = 'sawtooth'; o.frequency.value = hz(m); o.detune.value = cents;
+      f.type = 'lowpass'; f.frequency.value = 700;
+      g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(.012, t + .6);
+      g.gain.setValueAtTime(.012, t + dur - .3); g.gain.linearRampToValueAtTime(0, t + dur + .4);
+      o.connect(f); f.connect(g); out(g, .6); o.start(t); o.stop(t + dur + .5);
+    }));
+  }
+
+  let eighth = 0; // position dans la boucle, en croches
+  function schedule() {
+    while (next < ctx.currentTime + .4) {
+      const [m, d] = MEL[step];
+      if (eighth % 6 === 0) pad(CHORDS[eighth / 6], next, 6 * E);
+      bell(m, next);
+      next += d * E; eighth += d; step++;
+      if (step === MEL.length) { step = 0; eighth = 0; next += 2 * E; } // petit souffle avant de reprendre
+    }
+  }
+
+  async function toggle() {
+    if (!ctx) init();
+    on = !on;
+    btn.setAttribute('aria-pressed', on);
+    const t = ctx.currentTime;
+    master.gain.cancelScheduledValues(t); master.gain.setValueAtTime(master.gain.value, t);
+    if (on) {
+      await ctx.resume();
+      if (!timer) { next = ctx.currentTime + .1; timer = setInterval(schedule, 100); schedule(); }
+      master.gain.linearRampToValueAtTime(.9, ctx.currentTime + 1.2);
+    } else {
+      master.gain.linearRampToValueAtTime(0, t + .5);
+      setTimeout(() => { if (!on) { clearInterval(timer); timer = null; ctx.suspend(); step = 0; eighth = 0; } }, 600);
+    }
+  }
+  btn.addEventListener('click', toggle);
+  // Onglet caché : on se tait, puis on reprend au retour
+  document.addEventListener('visibilitychange', () => {
+    if (!ctx || !on) return;
+    document.hidden ? ctx.suspend() : ctx.resume();
+  });
+})();
+</script>
 
 <script type="module">
 import * as THREE from 'three';
